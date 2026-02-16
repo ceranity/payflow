@@ -5,12 +5,14 @@ import com.payflow.payment_service.dto.PaymentResponseDTO;
 import com.payflow.payment_service.mapper.PaymentEventMapper;
 import com.payflow.payment_service.mapper.PaymentMapper;
 import com.payflow.payment_service.messaging.PaymentPublisher;
-import com.payflow.payment_service.mapper.PaymentMapper;
+
 import com.payflow.payment_service.model.Payment;
+import com.payflow.payment_service.model.PaymentStatus;
 import com.payflow.payment_service.repository.PaymentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +40,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponseDTO createPayment(PaymentRequestDTO request) {
 
-        Payment payment = mapper.toModel(request);
+        Payment payment = new Payment();
+
+        payment.setAmount(request.getAmount());
+        payment.setCurrency(request.getCurrency());
+        payment.setStatus(PaymentStatus.APPROVED);
 
         Payment saved = repository.save(payment);
 
@@ -49,17 +55,21 @@ public class PaymentServiceImpl implements PaymentService {
         return mapper.toDTO(saved);
     }
 
+
     public List<PaymentResponseDTO> getPayments() {
         List<Payment> payments = repository.findAll();
 
         List<PaymentResponseDTO> paymentResponseDTO =
-                payments.stream().map(patient -> PaymentMapper.toDTO(payments)).toList();
-
+                payments.stream()
+                        .map(PaymentMapper::toDTO)
+                        .toList();
         return paymentResponseDTO;
 
     }
     public PaymentResponseDTO getPaymentById(UUID id){
-        Payment payment = repository.findById(id);
+        Payment payment = repository.findById(id).orElseThrow(() ->
+                new RuntimeException("payment not found")
+        );
         PaymentResponseDTO paymentResponseDTO = PaymentMapper.toDTO(payment);
         return paymentResponseDTO;
     }

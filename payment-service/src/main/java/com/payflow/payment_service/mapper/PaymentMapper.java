@@ -4,7 +4,9 @@ import com.payflow.payment_service.dto.PaymentEventDTO;
 import com.payflow.payment_service.dto.PaymentRequestDTO;
 import com.payflow.payment_service.dto.PaymentResponseDTO;
 import com.payflow.payment_service.model.Payment;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PaymentMapper {
     public static PaymentResponseDTO toDTO(Payment payment){
         PaymentResponseDTO paymentResponseDTO = new PaymentResponseDTO();

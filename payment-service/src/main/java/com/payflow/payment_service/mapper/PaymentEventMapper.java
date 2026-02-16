@@ -2,7 +2,9 @@ package com.payflow.payment_service.mapper;
 
 import com.payflow.payment_service.dto.PaymentEventDTO;
 import com.payflow.payment_service.model.Payment;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PaymentEventMapper {
     public static PaymentEventDTO toEventDTO(Payment payment) {
 
